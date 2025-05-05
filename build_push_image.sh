@@ -10,6 +10,9 @@ docker_username="zyynzyzy"
 docker build . -t $image_name:$image_version
 #Build Docker image
 
+docker images
+#Menampilkan daftar image yang sudah dibuild
+
 echo $PASSWORD_DOCKER_HUB | docker login -u $docker_username --password-stdin
 #Memasukkan password ke dalam docker login 
 
