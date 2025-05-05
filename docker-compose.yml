@@ -1,0 +1,25 @@
+version: '3.7'
+#Memberikan versi docker compose yang digunakan
+
+services:
+  item-db:
+    image: mongo:3
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - app-db:/data/db
+#Menggunakan image mongo versi 3 dan mengatur port 27017 untuk akses database
+
+  item-app:
+    image: zyynzyzy/item-app:v1
+    depends_on:
+      - item-db
+    restart: always
+    ports:
+      - "80:8080"
+#Menggunakan image item-app versi 1 dan mengatur port 80 untuk akses aplikasi
+
+volumes:
+  app-db:
+#Membuat volume untuk menyimpan data database
