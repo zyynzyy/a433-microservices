@@ -1,0 +1,52 @@
+version: '3.8'
+# Menggunakan versi 3.8 dari Docker Compose
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.11-management
+    container_name: rabbitmq
+    # Menggunakan image RabbitMQ dengan plugin manajemen
+    ports:
+      - "5672:5672"  
+      - "15672:15672"
+      # Port untuk AMPQ dan manajemen web
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+      # Mengatur user dan password default
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      # Health check untuk RabbitMQ
+
+  order-service:
+    image: zyynzyzy/order-service:latest
+    container_name: order-service
+    ports:
+      - "3000:3000"
+    # Menggunakan image order-service yang sudah dibuild
+    environment:
+      AMQP_URL: amqp://guest:guest@rabbitmq:5672
+    # Mengatur URL AMQP untuk koneksi ke RabbitMQ
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+    # Mengatur restart policy
+
+  shipping-service:
+    image: zyynzyzy/shipping-service:latest
+    container_name: shipping-service
+    # Menggunakan image shipping-service yang sudah dibuild
+    ports:
+      - "3001:3001"
+    # Port untuk shipping service
+    environment:
+      AMQP_URL: amqp://guest:guest@rabbitmq:5672
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+    # Mengatur restart policy
